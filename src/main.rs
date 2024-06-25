@@ -49,8 +49,41 @@ fn main() {
                 Err(e) => eprintln!("{:?}", e),
             }
         }
-        if serial_read.len() > 0 {
-            println!("{}", serial_read);
+        if serial_read.len() > 13 {
+            println!("Serial read: {:?}", serial_read);
+            let pattern = &serial_read[0..12];
+            let value = &serial_read[12..];
+
+            match pattern.trim() {
+                "44 48 48 55" => {
+                    let humidity: u8 = u8::from_str_radix(value, 16).unwrap();
+                    println!("Humidity: {}", humidity);
+                }
+                "44 48 54 45" => {
+                    let temperature: i8 = i8::from_str_radix(value, 16).unwrap();
+                    println!("Temperature: {}", temperature);
+                }
+                "4A 59 58 49" => {
+                    if value.len() != 5 {
+                        println!("Invalid pattern");
+                        continue;
+                    }
+                    let pos_x_hex = &value.trim()[0..2];
+                    let pos_y_hex = &value.trim()[3..5];
+                    let pos_x: i8 = i8::from_str_radix(pos_x_hex, 16).unwrap();
+                    let pos_y: i8 = i8::from_str_radix(pos_y_hex, 16).unwrap();
+
+                    println!("Joystick: x:{} y:{}", pos_x, pos_y);
+                }
+                "52 46 49 44" => {
+                    let tag_id = &value.trim();
+                    println!("Tag ID: {}", tag_id);
+                }
+                _ => {
+                    println!("Invalid pattern");
+                }
+            }
+
             serial_read.clear();
         }
     }
