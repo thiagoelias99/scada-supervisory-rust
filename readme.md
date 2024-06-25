@@ -1,4 +1,4 @@
-<h1 align="center">SCADA - Arduino Hardware</h1> 
+<h1 align="center">SCADA - Rust Supervisory</h1> 
 
 <p align="center">
 <a href="https://www.rust-lang.org/">
